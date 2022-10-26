@@ -1,0 +1,4 @@
+suites:
+    main:
+        namespace: Brightweb\SyliusStanPayPlugin
+        psr4_prefix: Brightweb\SyliusStanPayPlugin
