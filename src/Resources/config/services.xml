@@ -7,8 +7,9 @@
 
     <services>
         <defaults public="true" autoconfigure="false" autowire="false"/>
-        
-        <service id="Brightweb\SyliusStanPayPlugin\Controller\GreetingController" autowire="true" autoconfigure="true" public="true" />
-        <!-- Put your services here -->
+
+        <parameters>
+            <parameter key="brightweb_stan_pay_cache_dir">%kernel.project_dir%/var/cache/%env(APP_ENV)%</parameter>
+        </parameters>
     </services>
 </container>

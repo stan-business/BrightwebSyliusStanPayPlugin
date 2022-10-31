@@ -6,7 +6,7 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\LogicException;
 use Payum\Core\GatewayFactory;
 
-use Brightweb\SyliusStanPayPlugin\ApiClient\StanPayApiClientInterface;
+use Brightweb\SyliusStanPayPlugin\Bridge\StanPayBridgeInterface;
 
 class StanPayGatewayFactory extends GatewayFactory
 {
@@ -19,7 +19,7 @@ class StanPayGatewayFactory extends GatewayFactory
 
         if (false == $config['payum.api']) {
             $config['payum.default_options'] = [
-                'environment' => StanPayApiClientInterface::STAN_MODE_TEST,
+                'environment' => StanPayBridgeInterface::STAN_MODE_TEST,
                 'client_id' => '',
                 'client_secret' => '',
                 'only_for_stanner' => '',
