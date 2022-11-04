@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Brightweb\SyliusStanPayPlugin\Bridge;
 
 use Stan\Model\Payment;
+use Stan\Model\PreparedPayment;
+use Stan\Model\PaymentRequestBody;
 
 interface StanPayBridgeInterface
 {
@@ -21,12 +23,13 @@ interface StanPayBridgeInterface
 
     public function setAuthorizationData(
         string $environment,
-        string $signatureKey,
         string $clientId,
-        string $clientSecret
+        string $clientSecret,
+        string $clientTestId,
+        string $clientTestSecret
     ): void;
 
-    public function preparePayment(array $data): Payment;
+    public function preparePayment(PaymentRequestBody $data): PreparedPayment;
 
     public function getPayment(string $id): Payment;
 }

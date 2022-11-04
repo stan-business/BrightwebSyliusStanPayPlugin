@@ -18,14 +18,20 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Request\Capture;
+use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Sync;
+use Payum\Core\Request\Capture;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
+use Sylius\Bundle\PayumBundle\Model\PaymentSecurityToken;
+use Sylius\Component\Core\Model\CustomerInterface;
+use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\OrderItemInterface;
 
 use Brightweb\SyliusStanPayPlugin\Bridge\StanPayBridgeInterface;
+use Stan\Model\PaymentRequestBody;
+use Stan\Model\CustomerRequestBody;
 
-// TODO
 class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface, GenericTokenFactoryAwareInterface
 {
     use GatewayAwareTrait;
@@ -47,10 +53,12 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareI
             throw new UnsupportedApiException('Not supported. Expected to be set as array.');
         }
 
-        $this->openPayUBridge->setAuthorizationData(
+        $this->stanPayBridge->setAuthorizationData(
             $api['environment'],
             $api['client_id'],
-            $api['client_secret']
+            $api['client_secret'],
+            $api['client_test_id'],
+            $api['client_test_secret']
         );
     }
 
@@ -61,30 +69,18 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareI
     {
         /** @var Capture $request */
         RequestNotSupportedException::assertSupports($this, $request);
+        $model = $request->getModel();
 
-        $details = ArrayObject::ensureArrayObject($request->getModel());
+        /** @var OrderInterface $orderData */
+        $order = $request->getFirstModel()->getOrder();
 
-        if (false == $details['transaction_id']) {
-            if (false == $details['success_url'] && $request->getToken()) {
-                $details['success_url'] = $request->getToken()->getTargetUrl();
-            }
-            if (false == $details['abort_url'] && $request->getToken()) {
-                $details['abort_url'] = $request->getToken()->getTargetUrl();
-            }
+        /** @var TokenInterface $token */
+        $token = $request->getToken();
+        $paymentBody = $this->preparePayment($token, $order);
 
-            if (false == $details['notification_url'] && $request->getToken() && $this->tokenFactory) {
-                $notifyToken = $this->tokenFactory->createNotifyToken(
-                    $request->getToken()->getGatewayName(),
-                    $request->getToken()->getDetails()
-                );
+        $preparedPayment = $this->stanPayBridge->preparePayment($paymentBody);
 
-                $details['notification_url'] = $notifyToken->getTargetUrl();
-            }
-
-            $this->gateway->execute(new CreateTransaction($details));
-        }
-
-        $this->gateway->execute(new Sync($details));
+        throw new HttpRedirect($preparedPayment->getRedirectUrl());
     }
 
     public function supports($request)
@@ -92,5 +88,29 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareI
         return $request instanceof Capture &&
             $request->getModel() instanceof ArrayAccess
         ;
+    }
+
+    public function preparePayment(PaymentSecurityToken $token, OrderInterface $order): PaymentRequestBody
+    {
+        $paymentBody = new PaymentRequestBody();
+
+        $paymentBody
+            ->setOrderId($order->getNumber())
+            ->setAmount($order->getTotal())
+            ->setReturnUrl($token->getTargetUrl())
+            ->setState(
+                $this->tokenFactory->createNotifyToken(
+                    $token->getGatewayName(),
+                    $token->getDetails()
+                )
+                ->getHash()
+            );
+
+        return $paymentBody;
+    }
+
+    public function prepareCustomer(CustomerInterface $customer): CustomerRequestBody
+    {
+        // TODO
     }
 }

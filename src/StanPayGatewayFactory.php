@@ -22,21 +22,25 @@ class StanPayGatewayFactory extends GatewayFactory
                 'environment' => StanPayBridgeInterface::STAN_MODE_TEST,
                 'client_id' => '',
                 'client_secret' => '',
+                'client_test_id' => '',
+                'client_test_secret' => '',
                 'only_for_stanner' => '',
             ];
             $config->defaults($config['payum.default_options']);
 
-            $config['payum.required_options'] = ['environment', 'client_id', 'client_secret'];
+            $config['payum.required_options'] = ['environment', 'live_api_client_id', 'live_api_secret'];
 
-            $config['payum.api'] = function (ArrayObject $config) {
+            $config['payum.api'] = static function (ArrayObject $config): array {
                 $config->validateNotEmpty($config['payum.required_options']);
 
-                return new Api([
+                return [
                     'environment' => $config['environment'],
-                    'client_id' => $config['client_id'],
-                    'client_secret' => $config['client_secret'],
+                    'client_id' => $config['live_api_client_id'],
+                    'client_secret' => $config['live_api_secret'],
+                    'client_test_id' => $config['test_api_client_id'],
+                    'client_test_secret' => $config['test_api_secret'],
                     'only_for_stanner' => $config['only_for_stanner'],
-                ]);
+                ];
             };
         }
     }
