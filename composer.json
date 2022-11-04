@@ -13,6 +13,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "stan-business/stan-php": "^1.0",
         "sylius/sylius": "^1.11"
     },
     "require-dev": {
@@ -55,6 +56,7 @@
             "dev-master": "1.11-dev"
         }
     },
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Brightweb\\SyliusStanPayPlugin\\": "src/",

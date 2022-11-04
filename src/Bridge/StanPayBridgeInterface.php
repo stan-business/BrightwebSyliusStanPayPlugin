@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Brightweb\SyliusStanPayPlugin\Bridge;
 
-use MultiSafepayAPI\Object\Orders;
+use Stan\Model\Payment;
 
 interface StanPayBridgeInterface
 {
@@ -26,7 +26,7 @@ interface StanPayBridgeInterface
         string $clientSecret
     ): void;
 
-    public function preparePayment(array $data): Orders; // TODO return payment
+    public function preparePayment(array $data): Payment;
 
-    public function getPayment(string $id): \stdClass; // TODO return payment
+    public function getPayment(string $id): Payment;
 }

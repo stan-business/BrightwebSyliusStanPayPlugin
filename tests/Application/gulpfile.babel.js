@@ -32,7 +32,7 @@ const config = [
 
 export const buildAdmin = function buildAdmin() {
   return gulp.src('../../vendor/sylius/sylius/src/Sylius/Bundle/AdminBundle/gulpfile.babel.js', { read: false })
-    .pipe(chug({ args: config, tasks: 'build' }));
+    .pipe(chug({ args: config, tasks: 'build', sass }));
 };
 buildAdmin.description = 'Build admin assets.';
 

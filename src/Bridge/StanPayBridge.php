@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Brightweb\SyliusStanPayPlugin\Bridge;
 
+use Stan\Model\Payment;
+
 final class StanPayBridge implements StanPayBridgeInterface
 {
     /*** @var string|null */
@@ -29,12 +31,12 @@ final class StanPayBridge implements StanPayBridgeInterface
         // TODO
     }
 
-    public function preparePayment(array $data)
+    public function preparePayment(array $data): Payment
     {
         // TODO
     }
 
-    public function getPayment(string $id)
+    public function getPayment(string $id): Payment
     {
         // TODO
     }
