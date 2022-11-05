@@ -19,7 +19,6 @@ use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetCurrency;
 
-// TODO
 class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;

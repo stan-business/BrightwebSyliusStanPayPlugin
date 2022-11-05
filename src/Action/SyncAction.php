@@ -18,9 +18,8 @@ use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Sync;
 
-use Brightweb\SyliusStanPayPlugin\Bridge\GetPayment;
+use Brightweb\SyliusStanPayPlugin\Request\Api\GetPayment;
 
-// TODO
 class SyncAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
@@ -34,8 +33,8 @@ class SyncAction implements ActionInterface, GatewayAwareInterface
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
 
-        if ($details['transaction_id']) {
-            $this->gateway->execute(new GetTransactionData($details));
+        if ($details['stan_payment_id']) {
+            $this->gateway->execute(new GetPayment($details));
         }
     }
 

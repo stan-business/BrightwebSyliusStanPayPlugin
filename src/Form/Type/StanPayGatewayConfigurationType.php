@@ -17,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-use Brightweb\SyliusStanPayPlugin\Bridge\StanPayBridgeInterface;
+use Brightweb\SyliusStanPayPlugin\Api;
 
 final class StanPayGatewayConfigurationType extends AbstractType
 {
@@ -33,8 +33,8 @@ final class StanPayGatewayConfigurationType extends AbstractType
                 [
                     'label' => 'brightweb.stan_pay_plugin.form.gateway_configuration.environment',
                     'choices' => [
-                        'brightweb.stan_pay_plugin.form.gateway_configuration.live' => StanPayBridgeInterface::STAN_MODE_LIVE,
-                        'brightweb.stan_pay_plugin.form.gateway_configuration.test' => StanPayBridgeInterface::STAN_MODE_TEST,
+                        'brightweb.stan_pay_plugin.form.gateway_configuration.live' => Api::STAN_MODE_LIVE,
+                        'brightweb.stan_pay_plugin.form.gateway_configuration.test' => Api::STAN_MODE_TEST,
                     ],
                 ]
             )

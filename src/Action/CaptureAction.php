@@ -12,7 +12,6 @@ namespace Brightweb\SyliusStanPayPlugin\Action;
 
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
@@ -28,39 +27,13 @@ use Sylius\Component\Core\Model\CustomerInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 
-use Brightweb\SyliusStanPayPlugin\Bridge\StanPayBridgeInterface;
-use Stan\Model\PaymentRequestBody;
-use Stan\Model\CustomerRequestBody;
+use Brightweb\SyliusStanPayPlugin\Api;
+use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
 
-class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface, GenericTokenFactoryAwareInterface
+class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTokenFactoryAwareInterface
 {
     use GatewayAwareTrait;
     use GenericTokenFactoryAwareTrait;
-
-    private $stanPayBridge;
-
-    public function __construct(StanPayBridgeInterface $stanPayBridge)
-    {
-        $this->stanPayBridge = $stanPayBridge;
-    }
-
-    /**
-     * @throws UnsupportedApiException if the given Api is not supported.
-     */
-    public function setApi($api): void
-    {
-        if (false === is_array($api)) {
-            throw new UnsupportedApiException('Not supported. Expected to be set as array.');
-        }
-
-        $this->stanPayBridge->setAuthorizationData(
-            $api['environment'],
-            $api['client_id'],
-            $api['client_secret'],
-            $api['client_test_id'],
-            $api['client_test_secret']
-        );
-    }
 
     /**
      * @param Capture $request
@@ -69,18 +42,35 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareI
     {
         /** @var Capture $request */
         RequestNotSupportedException::assertSupports($this, $request);
+
         $model = $request->getModel();
+        $details = ArrayObject::ensureArrayObject($request->getModel());
 
         /** @var OrderInterface $orderData */
         $order = $request->getFirstModel()->getOrder();
 
-        /** @var TokenInterface $token */
-        $token = $request->getToken();
-        $paymentBody = $this->preparePayment($token, $order);
+        // creates a payment
+        if (null === $details['stan_payment_id']) {
+            /** @var TokenInterface $token */
+            $token = $request->getToken();
 
-        $preparedPayment = $this->stanPayBridge->preparePayment($paymentBody);
+            if ($token) {
+                $details['return_url'] = $token->getTargetUrl();
+            }
 
-        throw new HttpRedirect($preparedPayment->getRedirectUrl());
+            $notifyToken = $this->tokenFactory->createNotifyToken(
+                $token->getGatewayName(),
+                $token->getDetails()
+            );
+
+            $details['order_id'] = $order->getNumber();
+            $details['token_hash'] = $notifyToken->getHash();
+            $details['int_amount'] = $order->getTotal();
+    
+            $this->gateway->execute(new PreparePayment($details));
+        }
+
+        $this->gateway->execute(new Sync($details));
     }
 
     public function supports($request)
@@ -88,29 +78,5 @@ class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareI
         return $request instanceof Capture &&
             $request->getModel() instanceof ArrayAccess
         ;
-    }
-
-    public function preparePayment(PaymentSecurityToken $token, OrderInterface $order): PaymentRequestBody
-    {
-        $paymentBody = new PaymentRequestBody();
-
-        $paymentBody
-            ->setOrderId($order->getNumber())
-            ->setAmount($order->getTotal())
-            ->setReturnUrl($token->getTargetUrl())
-            ->setState(
-                $this->tokenFactory->createNotifyToken(
-                    $token->getGatewayName(),
-                    $token->getDetails()
-                )
-                ->getHash()
-            );
-
-        return $paymentBody;
-    }
-
-    public function prepareCustomer(CustomerInterface $customer): CustomerRequestBody
-    {
-        // TODO
     }
 }

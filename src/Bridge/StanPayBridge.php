@@ -16,55 +16,56 @@ use Stan\Model\PaymentRequestBody;
 use Stan\Api\StanClient;
 use Stan\Configuration;
 
-final class StanPayBridge implements StanPayBridgeInterface
+final class StanPayBridge implements Api
 {
-    /*** @var string|null */
-    private $cacheDir;
+    // /*** @var string|null */
+    // private $cacheDir;
 
-    /*** @var Stan\Configuration */
-    private $apiConfig;
+    // /*** @var Stan\Configuration */
+    // private $apiConfig;
 
-    public function __construct(string $cacheDir = null)
-    {
-        $this->cacheDir = $cacheDir;
+    // public function __construct(string $cacheDir = null)
+    // {
+    //     $this->cacheDir = $cacheDir;
 
-        $this->apiConfig = new Configuration();
-    }
+    //     $this->apiConfig = new Configuration();
+    // }
 
-    public function setAuthorizationData(
-        string $environment,
-        string $clientId,
-        string $clientSecret,
-        string $clientTestId,
-        string $clientTestSecret
-    ): void {
-        $confApiClientId = $environment === StanPayBridgeInterface::STAN_MODE_TEST
-            ? $clientTestId
-            : $clientId;
+    // public function setAuthorizationData(
+    //     string $environment,
+    //     string $clientId,
+    //     string $clientSecret,
+    //     string $clientTestId,
+    //     string $clientTestSecret
+    // ): void {
+    //     $confApiClientId = $environment === Api::STAN_MODE_TEST
+    //         ? $clientTestId
+    //         : $clientId;
     
-        $confApiClientSecret = $environment === StanPayBridgeInterface::STAN_MODE_TEST
-            ? $clientTestSecret
-            : $clientSecret;
+    //     $confApiClientSecret = $environment === Api::STAN_MODE_TEST
+    //         ? $clientTestSecret
+    //         : $clientSecret;
 
-        $this->apiConfig
-            ->setHost('https://api-staging.stan-app.fr/v1')
-            ->setClientId($confApiClientId)
-            ->setClientSecret($confApiClientSecret);
-    }
+    //     $this->apiConfig
+    //         ->setHost('https://api-staging.stan-app.fr/v1')
+    //         ->setClientId($confApiClientId)
+    //         ->setClientSecret($confApiClientSecret);
+    // }
 
-    public function preparePayment(PaymentRequestBody $paymentBody): PreparedPayment
-    {
-        $apiClient = $this->getApiClient();
-        return $apiClient->paymentApi->create($paymentBody);
-    }
+    // public function preparePayment(PaymentRequestBody $paymentBody): PreparedPayment
+    // {
+    //     $apiClient = $this->getApiClient();
+    //     return $apiClient->paymentApi->create($paymentBody);
+    // }
 
-    public function getPayment(string $id): Payment
-    {
-        // TODO
-    }
+    // public function getPayment(string $paymentId): Payment
+    // {
+    //     $apiClient = $this->getApiClient();
+    //     return $payment = $apiClient->paymentApi->getPayment($paymentId);
+    // }
 
-    private function getApiClient(): StanClient
-    {
-        return new StanClient($this->apiConfig);
-    }
+    // private function getApiClient(): StanClient
+    // {
+    //     return new StanClient($this->apiConfig);
+    // }
 }
