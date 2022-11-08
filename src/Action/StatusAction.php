@@ -35,13 +35,13 @@ class StatusAction implements ActionInterface
             return;
         }
 
-        // if (! isset($details['stanPaymentStatus'])) {
-        //     $request->markNew();
+        if (! isset($details['stan_payment_status'])) {
+            $request->markNew();
 
-        //     return;
-        // }
+            return;
+        }
 
-        switch ($details['stanPaymentStatus']) {
+        switch ($details['stan_payment_status']) {
             case Api::PAYMENT_FAILURE:
                 $request->markFailed();
                 break;

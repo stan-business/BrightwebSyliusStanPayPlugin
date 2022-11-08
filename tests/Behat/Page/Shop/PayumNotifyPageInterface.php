@@ -6,10 +6,7 @@ namespace Tests\Brightweb\SyliusStanPayPlugin\Behat\Page\Shop;
 
 use FriendsOfBehat\PageObjectExtension\Page\SymfonyPageInterface;
 
-interface WelcomePageInterface extends SymfonyPageInterface
+interface PayumNotifyPageInterface extends SymfonyPageInterface
 {
-    /**
-     * @return string
-     */
-    public function getGreeting(): string;
+    public function getNotifyUrl(array $urlParameters): string;
 }

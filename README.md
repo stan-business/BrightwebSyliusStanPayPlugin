@@ -101,7 +101,7 @@ To be able to setup a plugin's database, remember to configure you database cred
 
     ```bash
     (cd tests/Application && APP_ENV=test bin/console sylius:fixtures:load)
-    (cd tests/Application && APP_ENV=test bin/console server:run -d public)
+    (cd tests/Application && APP_ENV=test symfony server:start --allow-http --dir public)
     ```
     
 - Using `dev` environment:
