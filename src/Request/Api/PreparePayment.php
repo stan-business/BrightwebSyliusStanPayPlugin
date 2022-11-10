@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * This file was created by developers working at Brightweb, editor of Stan
+ * Visit our website https://stan-business.fr
+ * For more information, contact jonathan@brightweb.cloud
+*/
+
 namespace Brightweb\SyliusStanPayPlugin\Request\Api;
 
 use Payum\Core\Request\Generic;

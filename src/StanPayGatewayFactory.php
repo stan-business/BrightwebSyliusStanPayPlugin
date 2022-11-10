@@ -17,8 +17,10 @@ use Brightweb\SyliusStanPayPlugin\Action\ConvertPaymentAction;
 use Brightweb\SyliusStanPayPlugin\Action\NotifyAction;
 use Brightweb\SyliusStanPayPlugin\Action\StatusAction;
 use Brightweb\SyliusStanPayPlugin\Action\SyncAction;
+
 use Brightweb\SyliusStanPayPlugin\Action\Api\PreparePaymentAction;
 use Brightweb\SyliusStanPayPlugin\Action\Api\GetPaymentAction;
+use Brightweb\SyliusStanPayPlugin\Action\Api\CreateCustomerAction;
 
 use Brightweb\SyliusStanPayPlugin\Api;
 
@@ -37,6 +39,7 @@ class StanPayGatewayFactory extends GatewayFactory
 
             'payum.action.api.create_transaction' => new PreparePaymentAction(),
             'payum.action.api.get_transaction_data' => new GetPaymentAction(),
+            'payum.action.api.create_customer' => new CreateCustomerAction()
         ]);
 
         if (false == $config['payum.api']) {

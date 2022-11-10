@@ -29,6 +29,7 @@ use Sylius\Component\Core\Model\OrderItemInterface;
 
 use Brightweb\SyliusStanPayPlugin\Api;
 use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
+use Brightweb\SyliusStanPayPlugin\Request\Api\CreateCustomer;
 
 class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTokenFactoryAwareInterface
 {
@@ -66,7 +67,8 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
             $details['order_id'] = $order->getNumber();
             $details['token_hash'] = $notifyToken->getHash();
             $details['int_amount'] = $order->getTotal();
-    
+
+            $this->gateway->execute(new CreateCustomer($details));
             $this->gateway->execute(new PreparePayment($details));
         }
 
