@@ -39,6 +39,10 @@ class CreateCustomerAction implements ActionInterface, ApiAwareInterface
      */
     public function execute($request)
     {
+        if (true === (bool) $this->api->options['only_for_stanner']) {
+            return;
+        }
+
         RequestNotSupportedException::assertSupports($this, $request);
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
