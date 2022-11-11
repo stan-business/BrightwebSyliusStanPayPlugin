@@ -68,7 +68,7 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
             $details['token_hash'] = $notifyToken->getHash();
             $details['int_amount'] = $order->getTotal();
 
-            $this->gateway->execute(new CreateCustomer($details));
+            $this->gateway->execute(new CreateCustomer($request->getFirstModel()));
             $this->gateway->execute(new PreparePayment($details));
         }
 

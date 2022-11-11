@@ -12,7 +12,9 @@ namespace Brightweb\SyliusStanPayPlugin;
 
 use Stan\Model\Payment;
 use Stan\Model\PreparedPayment;
+use Stan\Model\Customer;
 use Stan\Model\PaymentRequestBody;
+use Stan\Model\CustomerRequestBody;
 use Stan\Api\StanClient;
 use Stan\Configuration;
 
@@ -38,7 +40,6 @@ class Api
     public function preparePayment(PaymentRequestBody $paymentBody): PreparedPayment
     {
         $apiClient = $this->getApiClient();
-        var_dump($paymentBody);
         return $apiClient->paymentApi->create($paymentBody);
     }
 
@@ -48,13 +49,19 @@ class Api
         return $payment = $apiClient->paymentApi->getPayment($paymentId);
     }
 
+    public function createCustomer(CustomerRequestBody $customerBody): Customer
+    {
+        $apiClient = $this->getApiClient();
+        return $apiClient->customerApi->create($customerBody);
+    }
+
     private function getApiClient(): StanClient
     {
         $environment = $this->options['environment'];
 
         $confApiClientId = $environment === self::STAN_MODE_TEST
             ? $this->options['client_test_id']
-            : $$this->options['client_id'];
+            : $this->options['client_id'];
     
         $confApiClientSecret = $environment === self::STAN_MODE_TEST
             ? $this->options['client_test_secret']

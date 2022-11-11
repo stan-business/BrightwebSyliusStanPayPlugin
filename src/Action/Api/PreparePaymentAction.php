@@ -23,7 +23,6 @@ use Brightweb\SyliusStanPayPlugin\Api;
 use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
 
 use Stan\Model\PaymentRequestBody;
-use Stan\Model\CustomerRequestBody;
 
 class PreparePaymentAction implements ActionInterface, ApiAwareInterface
 {
@@ -55,8 +54,11 @@ class PreparePaymentAction implements ActionInterface, ApiAwareInterface
             ->setAmount($details['int_amount'])
             ->setReturnUrl($details['return_url']);
 
-        if ($details['token_hash']) {
+        if (isset($details['token_hash'])) {
             $paymentBody->setState($details['token_hash']);
+        }
+        if (isset($details['stan_customer_id'])) {
+            $paymentBody->setCustomerId($details['stan_customer_id']);
         }
 
         $preparedPayment = $this->api->preparePayment($paymentBody);

@@ -17,9 +17,13 @@ use Payum\Core\ApiAwareTrait;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\LogicException;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Sylius\Component\Core\Model\OrderInterface;
 
 use Brightweb\SyliusStanPayPlugin\Api;
 use Brightweb\SyliusStanPayPlugin\Request\Api\CreateCustomer;
+
+use Stan\Model\CustomerRequestBody;
+use Stan\Model\Address;
 
 class CreateCustomerAction implements ActionInterface, ApiAwareInterface
 {
@@ -37,19 +41,34 @@ class CreateCustomerAction implements ActionInterface, ApiAwareInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        // TODO create customer
+        $details = ArrayObject::ensureArrayObject($request->getModel());
 
-        // $details = ArrayObject::ensureArrayObject($request->getModel());
+        $order = $request->getFirstModel()->getOrder();
+        $customer = $order->getCustomer();
+        $billingAddress = $order->getBillingAddress();
 
-        // if (false == $details['stan_payment_id']) {
-        //     throw new LogicException('The parameter "stan_payment_id" must be set. Have you run PrepareAction?');
-        // }
+        $customerBody = new CustomerRequestBody();
 
-        // $payment = $this->api->getPayment($details['stan_payment_id']);
+        $customerAddress = new Address();
+        $customerAddress = $customerAddress
+            ->setFirstname($billingAddress->getFirstName())
+            ->setLastname($billingAddress->getLastName())
+            ->setStreetAddress($billingAddress->getStreet())
+            // ->setStreetAddressLine2() TODO get line2 from shipping address
+            ->setLocality($billingAddress->getCity())
+            ->setZipCode($billingAddress->getPostcode())
+            ->setCountry($billingAddress->getCountryCode());
 
-        // $details->replace([
-        //     'stan_payment_status' => $payment->getPaymentStatus()
-        // ]);
+        $customerBody = $customerBody
+            ->setEmail($customer->getEmail())
+            ->setName($billingAddress->getFullname())
+            ->setAddress($customerAddress);
+
+        $createdCustomer = $this->api->createCustomer($customerBody);
+
+        $details->replace([
+            'stan_customer_id' => $createdCustomer->getId()
+        ]);
     }
 
     public function supports($request)
