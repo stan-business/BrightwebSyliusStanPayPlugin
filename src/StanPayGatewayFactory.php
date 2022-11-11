@@ -14,6 +14,7 @@ use Payum\Core\GatewayFactory;
 
 use Brightweb\SyliusStanPayPlugin\Action\CaptureAction;
 use Brightweb\SyliusStanPayPlugin\Action\ConvertPaymentAction;
+use Brightweb\SyliusStanPayPlugin\Action\NotifyNullAction;
 use Brightweb\SyliusStanPayPlugin\Action\NotifyAction;
 use Brightweb\SyliusStanPayPlugin\Action\StatusAction;
 use Brightweb\SyliusStanPayPlugin\Action\SyncAction;
@@ -33,6 +34,7 @@ class StanPayGatewayFactory extends GatewayFactory
             'payum.factory_title' => 'Stan Pay',
             'payum.action.capture' => new CaptureAction(),
             'payum.action.status' => new StatusAction(),
+            'payum.action.notify_null' => new NotifyNullAction(),
             'payum.action.notify' => new NotifyAction(),
             'payum.action.sync' => new SyncAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
