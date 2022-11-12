@@ -15,6 +15,7 @@ use Stan\Model\PreparedPayment;
 use Stan\Model\Customer;
 use Stan\Model\PaymentRequestBody;
 use Stan\Model\CustomerRequestBody;
+use Stan\Model\ApiSettingsRequestBody;
 use Stan\Api\StanClient;
 use Stan\Configuration;
 
@@ -53,6 +54,11 @@ class Api
     {
         $apiClient = $this->getApiClient();
         return $apiClient->customerApi->create($customerBody);
+    }
+
+    public function updateApiSettings(ApiSettingsRequestBody $apiSettings): void
+    {
+        $this->getApiClient()->apiSettingsApi->updateApiSettings($apiSettings);
     }
 
     private function getApiClient(): StanClient

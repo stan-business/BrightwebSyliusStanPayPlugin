@@ -13,19 +13,36 @@ namespace Brightweb\SyliusStanPayPlugin\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\HttpFoundation\Request;
 
 use Brightweb\SyliusStanPayPlugin\Api;
 
+use Stan\Model\ApiSettingsRequestBody;
+
 final class StanPayGatewayConfigurationType extends AbstractType
 {
+    /**
+     * @var string
+     */
+    private $baseUrl;
+
+    public function __construct(string $baseUrl)
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        var_dump($this->baseUrl);
         $builder
             ->add(
                 'environment',
@@ -89,6 +106,25 @@ final class StanPayGatewayConfigurationType extends AbstractType
                     'label' => 'brightweb.stan_pay_plugin.form.gateway_configuration.only_for_stanner',
                     'help' => 'brightweb.stan_pay_plugin.form.gateway_configuration.only_for_stanner_tip',
                 ]
-            );
+            )
+            ->add(
+                'website_url',
+                HiddenType::class,
+            )
+            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+                $gatewayOptions = $event->getData();
+
+                $api = new Api(array(
+                    "environment" => Api::STAN_MODE_LIVE,
+                    "client_id" => $gatewayOptions["live_api_client_id"],
+                    "client_secret" => $gatewayOptions["live_api_secret"]
+                ));
+
+                $apiSettings = new ApiSettingsRequestBody();
+
+                $apiSettings->setPaymentWebhookUrl("{$this->baseUrl}/payment/notify/unsafe/stan_pay");
+
+                $api->updateApiSettings($apiSettings);
+            });
     }
 }
