@@ -72,7 +72,7 @@ To be able to setup a plugin's database, remember to configure you database cred
     4. Run Behat:
     
       ```bash
-      vendor/bin/behat --strict --tags="@javascript"
+      vendor/bin/behat --strict --tags="@javascript,@ui"
       ```
     
   - Static Analysis

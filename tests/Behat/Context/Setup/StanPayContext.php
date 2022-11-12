@@ -51,13 +51,13 @@ final class StanPayContext implements Context
     }
 
     /**
-     * @Given the store has a payment method :paymentMethodName with a code :paymentMethodCode and Stan Pay Checkout gateway
+     * @Given the store has a Stan Pay payment method :paymentMethodName with a code :paymentMethodCode
      */
-    public function theStoreHasAPaymentMethodWithACodeAndStanPayCheckoutGateway(
+    public function theStoreHasAStanPayPaymentMethodWithACode(
         string $paymentMethodName,
         string $paymentMethodCode
     ): void {
-        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'Stan Pay Checkout');
+        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'stan_pay', 'Stan Pay');
         $paymentMethod->getGatewayConfig()->setConfig(
             [
                 'environment' => 'test',
@@ -68,13 +68,13 @@ final class StanPayContext implements Context
                 'payum.http_client' => '@sylius.payum.http_client',
             ]
         );
-        $this->paymentMethodManager->persist($paymentMethod);
         $this->paymentMethodManager->flush();
     }
 
     private function createPaymentMethod(
         string $name,
         string $code,
+        string $factoryName,
         string $description = '',
         bool $addForCurrentChannel = true,
         ?int $position = null
@@ -85,8 +85,8 @@ final class StanPayContext implements Context
                 'name' => ucfirst($name),
                 'code' => $code,
                 'description' => $description,
-                'gatewayName' => 'Stan Pay',
-                'gatewayFactory' => 'stan_pay',
+                'gatewayName' => $factoryName,
+                'gatewayFactory' => $factoryName,
                 'enabled' => true,
                 'channels' => ($addForCurrentChannel && $this->sharedStorage->has('channel'))
                     ? [$this->sharedStorage->get('channel')] : [],

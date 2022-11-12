@@ -60,31 +60,7 @@ class StanPayShopContext extends MinkContext implements Context
      */
     public function iGetRedirectedToStanPay(): void
     {
-        $this->stanPayApiMocker->mockSuccessfulPayment(
-            function () {
-                $jsonEvent = [
-                    'id' => 'evt_1',
-                    'type' => Event::CHECKOUT_SESSION_COMPLETED,
-                    'object' => 'event',
-                    'data' => [
-                        'object' => [
-                            'id' => 'cs_1',
-                            'object' => Session::OBJECT_NAME,
-                            'payment_intent' => 'pi_1',
-                            'metadata' => [
-                                'token_hash' => '%s',
-                            ],
-                        ],
-                    ],
-                ];
-                $payload = json_encode($jsonEvent);
-
-                $this->paymentPage->notify($payload);
-            },
-            function () {
-                $this->paymentPage->captureOrAuthorizeThenGoToAfterUrl();
-            }
-        );
+       // TODO
     }
     
     /**

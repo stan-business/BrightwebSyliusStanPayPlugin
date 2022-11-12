@@ -13,7 +13,6 @@ namespace Brightweb\SyliusStanPayPlugin\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
@@ -24,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Brightweb\SyliusStanPayPlugin\Api;
 
 use Stan\Model\ApiSettingsRequestBody;
+use Stan\ApiException;
 
 final class StanPayGatewayConfigurationType extends AbstractType
 {
@@ -42,7 +42,6 @@ final class StanPayGatewayConfigurationType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        var_dump($this->baseUrl);
         $builder
             ->add(
                 'environment',
@@ -107,10 +106,6 @@ final class StanPayGatewayConfigurationType extends AbstractType
                     'help' => 'brightweb.stan_pay_plugin.form.gateway_configuration.only_for_stanner_tip',
                 ]
             )
-            ->add(
-                'website_url',
-                HiddenType::class,
-            )
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 $gatewayOptions = $event->getData();
 
@@ -121,10 +116,14 @@ final class StanPayGatewayConfigurationType extends AbstractType
                 ));
 
                 $apiSettings = new ApiSettingsRequestBody();
-
                 $apiSettings->setPaymentWebhookUrl("{$this->baseUrl}/payment/notify/unsafe/stan_pay");
 
-                $api->updateApiSettings($apiSettings);
+                // TODO check if not already sets
+                try {
+                    $api->updateApiSettings($apiSettings);
+                } catch(ApiException $e) {
+                    // TODO display flash message bad API creds
+                }
             });
     }
 }

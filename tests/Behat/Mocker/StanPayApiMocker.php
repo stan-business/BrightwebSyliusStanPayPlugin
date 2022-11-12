@@ -14,6 +14,7 @@ use Brightweb\SyliusStanPayPlugin\Action\Api\PreparePaymentAction;
 use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
 use Brightweb\SyliusStanPayPlugin\Action\Api\GetPaymentAction;
 use Brightweb\SyliusStanPayPlugin\Request\Api\GetPayment;
+use Brightweb\SyliusStanPayPlugin\Api;
 
 use Sylius\Behat\Service\Mocker\MockerInterface;
 
@@ -30,7 +31,7 @@ final class StanPayApiMocker
     public function mockPreparePayment(callable $action): void
     {
         $mock = $this->mocker->mockService(
-            'tests.brightweb.stan_pay_plugin.behat.mocker.action.prepare_payment',
+            'tests.brightweb.stan_pay_plugin.behat.mocker.api.prepare_payment',
             PreparePaymentAction::class
         );
 
@@ -83,5 +84,7 @@ final class StanPayApiMocker
             ->andReturnUsing(function ($request) {
                 // TODO
             });
+
+        $this->mocker->unmockAll();
     }
 }
