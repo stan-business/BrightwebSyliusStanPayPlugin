@@ -10,8 +10,10 @@ declare(strict_types=1);
 
 namespace Brightweb\SyliusStanPayPlugin\Resolver;
 
-use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
+use Payum\Core\Bridge\Spl\ArrayObject;
 use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
+use Sylius\Component\Payment\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 
 final class DisplayStanPaymentMethodResolver implements PaymentMethodsResolverInterface
 {
@@ -26,21 +28,18 @@ final class DisplayStanPaymentMethodResolver implements PaymentMethodsResolverIn
     {
         $supportedMethods = $this->decoratedPaymentMethodsResolver->getSupportedMethods($subject);
 
+        /** @var string $userAgent */
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-        // for PHP < 8.0
-        if (!function_exists('str_contains')) {
-            function str_contains($haystack, $needle) {
-                return $needle !== '' && mb_strpos($haystack, $needle) !== false;
-            }
-        }
-
+        /** @var PaymentMethodInterface $method */
         foreach ($supportedMethods as $index => $method) {
+            /** @var ArrayObject $gatewayConfig */
             $gatewayConfig = $method->getGatewayConfig()->getConfig();
 
-            if (isset($gatewayConfig["only_for_stanner"])) {
-                if (true === (bool) $gatewayConfig["only_for_stanner"] && ! str_contains($userAgent, "StanApp")) {
+            if (isset($gatewayConfig['only_for_stanner'])) {
+                if (true === (bool) $gatewayConfig['only_for_stanner'] && !$this->checkIfStanner($userAgent)) {
                     unset($supportedMethods[$index]);
+
                     break;
                 }
             }
@@ -51,6 +50,11 @@ final class DisplayStanPaymentMethodResolver implements PaymentMethodsResolverIn
 
     public function supports(BasePaymentInterface $subject): bool
     {
-        $this->decoratedPaymentMethodsResolver->supports($subject);
+        return $this->decoratedPaymentMethodsResolver->supports($subject);
+    }
+
+    private function checkIfStanner(string $userAgent): bool
+    {
+        return $userAgent !== '' && mb_strpos($userAgent, 'StanApp') !== false;
     }
 }

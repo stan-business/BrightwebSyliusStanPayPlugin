@@ -11,19 +11,15 @@ declare(strict_types=1);
 namespace Brightweb\SyliusStanPayPlugin\Action\Api;
 
 use ArrayAccess;
+use Brightweb\SyliusStanPayPlugin\Api;
+use Brightweb\SyliusStanPayPlugin\Request\Api\CreateCustomer;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\LogicException;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Sylius\Component\Core\Model\OrderInterface;
-
-use Brightweb\SyliusStanPayPlugin\Api;
-use Brightweb\SyliusStanPayPlugin\Request\Api\CreateCustomer;
-
-use Stan\Model\CustomerRequestBody;
 use Stan\Model\Address;
+use Stan\Model\CustomerRequestBody;
 
 class CreateCustomerAction implements ActionInterface, ApiAwareInterface
 {
@@ -35,9 +31,9 @@ class CreateCustomerAction implements ActionInterface, ApiAwareInterface
     }
 
     /**
-     * @param CreateCustomer $request
+     * @param mixed $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         if (true === (bool) $this->api->options['only_for_stanner']) {
             return;
@@ -61,21 +57,23 @@ class CreateCustomerAction implements ActionInterface, ApiAwareInterface
             // ->setStreetAddressLine2() TODO get line2 from shipping address
             ->setLocality($billingAddress->getCity())
             ->setZipCode($billingAddress->getPostcode())
-            ->setCountry($billingAddress->getCountryCode());
+            ->setCountry($billingAddress->getCountryCode())
+        ;
 
         $customerBody = $customerBody
             ->setEmail($customer->getEmail())
             ->setName($billingAddress->getFullname())
-            ->setAddress($customerAddress);
+            ->setAddress($customerAddress)
+        ;
 
         $createdCustomer = $this->api->createCustomer($customerBody);
 
         $details->replace([
-            'stan_customer_id' => $createdCustomer->getId()
+            'stan_customer_id' => $createdCustomer->getId(),
         ]);
     }
 
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof CreateCustomer &&
             $request->getModel() instanceof ArrayAccess

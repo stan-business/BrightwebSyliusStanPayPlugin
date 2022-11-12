@@ -13,7 +13,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "stan-business/stan-php": "^1.0",
+        "stan-business/stan-php": "^1.0.1",
         "sylius/sylius": "^1.11"
     },
     "require-dev": {

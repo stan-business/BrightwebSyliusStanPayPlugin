@@ -11,25 +11,19 @@ declare(strict_types=1);
 namespace Brightweb\SyliusStanPayPlugin\Action;
 
 use ArrayAccess;
+use Brightweb\SyliusStanPayPlugin\Request\Api\CreateCustomer;
+use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Reply\HttpRedirect;
-use Payum\Core\Request\Sync;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\Sync;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
-use Sylius\Bundle\PayumBundle\Model\PaymentSecurityToken;
-use Sylius\Component\Core\Model\CustomerInterface;
+use Payum\Core\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\Model\OrderItemInterface;
-
-use Brightweb\SyliusStanPayPlugin\Api;
-use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
-use Brightweb\SyliusStanPayPlugin\Request\Api\CreateCustomer;
 
 class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTokenFactoryAwareInterface
 {
@@ -39,15 +33,14 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
     /**
      * @param Capture $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
-        /** @var Capture $request */
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = $request->getModel();
-        $details = ArrayObject::ensureArrayObject($request->getModel());
+        $details = ArrayObject::ensureArrayObject($model);
 
-        /** @var OrderInterface $orderData */
+        /** @var OrderInterface $order */
         $order = $request->getFirstModel()->getOrder();
 
         // creates a payment
@@ -61,7 +54,7 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
 
             $notifyToken = $this->tokenFactory->createNotifyToken(
                 $token->getGatewayName(),
-                $token->getDetails()
+                $token->getDetails(),
             );
 
             $details['order_id'] = $order->getNumber();
@@ -75,7 +68,7 @@ class CaptureAction implements ActionInterface, GatewayAwareInterface, GenericTo
         $this->gateway->execute(new Sync($details));
     }
 
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Capture &&
             $request->getModel() instanceof ArrayAccess

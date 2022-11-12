@@ -26,7 +26,7 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
     /**
      * @param Convert $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -47,7 +47,7 @@ class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
     /**
      * @param Convert $request
      */
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Convert &&
             $request->getSource() instanceof PaymentInterface &&

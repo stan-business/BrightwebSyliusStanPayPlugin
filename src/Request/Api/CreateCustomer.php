@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file was created by developers working at Brightweb, editor of Stan
  * Visit our website https://stan-business.fr

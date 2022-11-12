@@ -13,7 +13,6 @@ namespace Brightweb\SyliusStanPayPlugin\Action;
 use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpResponse;
@@ -26,8 +25,10 @@ class NotifyAction implements ActionInterface, GatewayAwareInterface
 
     /**
      * @param Notify $request
+     *
+     * @throws HttpResponse
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -36,7 +37,7 @@ class NotifyAction implements ActionInterface, GatewayAwareInterface
         throw new HttpResponse('OK', 200);
     }
 
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Notify &&
             $request->getModel() instanceof ArrayAccess

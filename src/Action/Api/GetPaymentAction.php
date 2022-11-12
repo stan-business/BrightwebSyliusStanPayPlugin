@@ -11,15 +11,14 @@ declare(strict_types=1);
 namespace Brightweb\SyliusStanPayPlugin\Action\Api;
 
 use ArrayAccess;
+use Brightweb\SyliusStanPayPlugin\Api;
+use Brightweb\SyliusStanPayPlugin\Request\Api\GetPayment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\LogicException;
 use Payum\Core\Exception\RequestNotSupportedException;
-
-use Brightweb\SyliusStanPayPlugin\Api;
-use Brightweb\SyliusStanPayPlugin\Request\Api\GetPayment;
 
 class GetPaymentAction implements ActionInterface, ApiAwareInterface
 {
@@ -33,7 +32,7 @@ class GetPaymentAction implements ActionInterface, ApiAwareInterface
     /**
      * @param GetPayment $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -46,11 +45,11 @@ class GetPaymentAction implements ActionInterface, ApiAwareInterface
         $payment = $this->api->getPayment($details['stan_payment_id']);
 
         $details->replace([
-            'stan_payment_status' => $payment->getPaymentStatus()
+            'stan_payment_status' => $payment->getPaymentStatus(),
         ]);
     }
 
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof GetPayment &&
             $request->getModel() instanceof ArrayAccess

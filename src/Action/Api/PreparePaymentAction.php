@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Brightweb\SyliusStanPayPlugin\Action\Api;
 
 use ArrayAccess;
+use Brightweb\SyliusStanPayPlugin\Api;
+use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
@@ -18,10 +20,6 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\LogicException;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Reply\HttpRedirect;
-
-use Brightweb\SyliusStanPayPlugin\Api;
-use Brightweb\SyliusStanPayPlugin\Request\Api\PreparePayment;
-
 use Stan\Model\PaymentRequestBody;
 
 class PreparePaymentAction implements ActionInterface, ApiAwareInterface
@@ -36,7 +34,7 @@ class PreparePaymentAction implements ActionInterface, ApiAwareInterface
     /**
      * @param PreparePayment $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -52,7 +50,8 @@ class PreparePaymentAction implements ActionInterface, ApiAwareInterface
         $paymentBody
             ->setOrderId($details['order_id'])
             ->setAmount($details['int_amount'])
-            ->setReturnUrl($details['return_url']);
+            ->setReturnUrl($details['return_url'])
+        ;
 
         if (isset($details['token_hash'])) {
             $paymentBody->setState($details['token_hash']);
@@ -65,13 +64,13 @@ class PreparePaymentAction implements ActionInterface, ApiAwareInterface
 
         $details->replace([
             'stan_payment_id' => $preparedPayment->getPaymentId(),
-            'payment_url' => $preparedPayment->getRedirectUrl()
+            'payment_url' => $preparedPayment->getRedirectUrl(),
         ]);
 
         throw new HttpRedirect($details['payment_url']);
     }
 
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof PreparePayment &&
             $request->getModel() instanceof ArrayAccess

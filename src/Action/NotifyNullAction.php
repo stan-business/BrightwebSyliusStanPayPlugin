@@ -29,13 +29,14 @@ class NotifyNullAction implements ActionInterface, GatewayAwareInterface
     /**
      * @param Notify $request
      */
-    public function execute($request)
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
         $this->gateway->execute($httpRequest = new GetHttpRequest());
 
         // TODO handle the case when state is missing
+        /** @var string $state */
         $state = $httpRequest->query['state'];
         if (empty($state)) {
             throw new HttpResponse('state is missing in URI query', 400);
@@ -45,7 +46,7 @@ class NotifyNullAction implements ActionInterface, GatewayAwareInterface
         $this->gateway->execute(new Notify($token->getToken()));
     }
 
-    public function supports($request)
+    public function supports($request): bool
     {
         return $request instanceof Notify &&
             null === $request->getModel()

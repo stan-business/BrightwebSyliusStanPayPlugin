@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file was created by developers working at Brightweb, editor of Stan
  * Visit our website https://stan-business.fr
@@ -8,26 +10,21 @@
 
 namespace Brightweb\SyliusStanPayPlugin;
 
-use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\LogicException;
-use Payum\Core\GatewayFactory;
-
+use Brightweb\SyliusStanPayPlugin\Action\Api\CreateCustomerAction;
+use Brightweb\SyliusStanPayPlugin\Action\Api\GetPaymentAction;
+use Brightweb\SyliusStanPayPlugin\Action\Api\PreparePaymentAction;
 use Brightweb\SyliusStanPayPlugin\Action\CaptureAction;
 use Brightweb\SyliusStanPayPlugin\Action\ConvertPaymentAction;
-use Brightweb\SyliusStanPayPlugin\Action\NotifyNullAction;
 use Brightweb\SyliusStanPayPlugin\Action\NotifyAction;
+use Brightweb\SyliusStanPayPlugin\Action\NotifyNullAction;
 use Brightweb\SyliusStanPayPlugin\Action\StatusAction;
 use Brightweb\SyliusStanPayPlugin\Action\SyncAction;
-
-use Brightweb\SyliusStanPayPlugin\Action\Api\PreparePaymentAction;
-use Brightweb\SyliusStanPayPlugin\Action\Api\GetPaymentAction;
-use Brightweb\SyliusStanPayPlugin\Action\Api\CreateCustomerAction;
-
-use Brightweb\SyliusStanPayPlugin\Api;
+use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\GatewayFactory;
 
 class StanPayGatewayFactory extends GatewayFactory
 {
-    protected function populateConfig(ArrayObject $config)
+    protected function populateConfig(ArrayObject $config): void
     {
         $config->defaults([
             'payum.factory_name' => 'stan_pay',
@@ -41,7 +38,7 @@ class StanPayGatewayFactory extends GatewayFactory
 
             'payum.action.api.create_transaction' => new PreparePaymentAction(),
             'payum.action.api.get_transaction_data' => new GetPaymentAction(),
-            'payum.action.api.create_customer' => new CreateCustomerAction()
+            'payum.action.api.create_customer' => new CreateCustomerAction(),
         ]);
 
         if (false == $config['payum.api']) {
@@ -57,7 +54,7 @@ class StanPayGatewayFactory extends GatewayFactory
 
             $config['payum.required_options'] = ['environment', 'live_api_client_id', 'live_api_secret'];
 
-            $config['payum.api'] = function (ArrayObject $config) {
+            $config['payum.api'] = function (ArrayObject $config): Api {
                 $config->validateNotEmpty($config['payum.required_options']);
 
                 return new Api([
