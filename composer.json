@@ -1,5 +1,5 @@
 {
-    "name": "brightweb/sylius-stan-pay-plugin",
+    "name": "stan-business/sylius-stan-pay-plugin",
     "type": "sylius-plugin",
     "description": "Plugin Stan Pay plugin to setup the payment method with Stan in your Sylius ecommerce website",
     "keywords": [
