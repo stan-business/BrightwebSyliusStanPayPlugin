@@ -1,6 +1,23 @@
 # Stan Pay Plugin in Sylius
+----
+
+[![](https://img.shields.io/packagist/l/stan-business/sylius-stan-pay-plugin.svg) ](https://packagist.org/packages/stan-business/sylius-stan-pay-plugin "License") [ ![](https://img.shields.io/packagist/v/stan-business/sylius-stan-pay-plugin.svg) ](https://packagist.org/packages/stan-business/sylius-stan-pay-plugin "Version") [![Support](https://img.shields.io/badge/support-contact%20author-blue])](https://compte.stan-app.fr)
 
 Stan Pay is a French payment solution that allows e-commerce sites to offer their customers an ultra-fast checkout and an innovative alternative payment method to the bank card. Add the free Stan Pay plugin and make your Sylius store take off.
+
+# Installation
+
+```bash
+$ composer require stan-business/sylius-stan-pay-plugin
+```
+    
+Add plugin dependencies to your config/bundles.php file:
+
+```php
+return [
+    Brightweb\SyliusStanPayPlugin::class => ['all' => true],
+]
+```
 
 # Configuration
 
