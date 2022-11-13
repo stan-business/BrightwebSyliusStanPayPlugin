@@ -11,18 +11,14 @@ declare(strict_types=1);
 namespace Tests\Brightweb\SyliusStanPayPlugin\Behat\Context\Setup;
 
 use Behat\Behat\Context\Context;
-use Doctrine\Persistence\ObjectManager;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Doctrine\ORM\EntityManagerInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Bundle\CoreBundle\Fixture\Factory\ExampleFactoryInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
-use Sylius\Component\Resource\Factory\FactoryInterface;
 
 final class StanPayContext implements Context
 {
-    use MockeryPHPUnitIntegration;
-
     /** @var SharedStorageInterface */
     private $sharedStorage;
 
@@ -32,17 +28,14 @@ final class StanPayContext implements Context
     /** @var ExampleFactoryInterface */
     private $paymentMethodExampleFactory;
 
-    /** @var FactoryInterface */
-    private $paymentMethodTranslationFactory;
-
-    /** @var ObjectManager */
+    /** @var EntityManagerInterface */
     private $paymentMethodManager;
 
     public function __construct(
         SharedStorageInterface $sharedStorage,
         PaymentMethodRepositoryInterface $paymentMethodRepository,
         ExampleFactoryInterface $paymentMethodExampleFactory,
-        ObjectManager $paymentMethodManager
+        EntityManagerInterface $paymentMethodManager
     ) {
         $this->sharedStorage = $sharedStorage;
         $this->paymentMethodRepository = $paymentMethodRepository;
@@ -57,7 +50,7 @@ final class StanPayContext implements Context
         string $paymentMethodName,
         string $paymentMethodCode
     ): void {
-        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'stan_pay', 'Stan Pay');
+        $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'Stan Pay', 'Pay with Stan Pay', true, 0);
         $paymentMethod->getGatewayConfig()->setConfig(
             [
                 'environment' => 'test',
@@ -65,6 +58,7 @@ final class StanPayContext implements Context
                 'client_secret' => 'client secret',
                 'client_test_id' => 'client test id',
                 'client_test_secret' => 'client test secret',
+                'only_for_stanner' => false,
                 'payum.http_client' => '@sylius.payum.http_client',
             ]
         );
@@ -74,7 +68,7 @@ final class StanPayContext implements Context
     private function createPaymentMethod(
         string $name,
         string $code,
-        string $factoryName,
+        string $gatewayFactory,
         string $description = '',
         bool $addForCurrentChannel = true,
         ?int $position = null
@@ -85,16 +79,18 @@ final class StanPayContext implements Context
                 'name' => ucfirst($name),
                 'code' => $code,
                 'description' => $description,
-                'gatewayName' => $factoryName,
-                'gatewayFactory' => $factoryName,
+                'gatewayName' => $gatewayFactory,
+                'gatewayFactory' => $gatewayFactory,
                 'enabled' => true,
                 'channels' => ($addForCurrentChannel && $this->sharedStorage->has('channel'))
                     ? [$this->sharedStorage->get('channel')] : [],
             ]
         );
 
+        var_export($gatewayFactory);
+
         if (null !== $position) {
-            $paymentMethod->setPosition($position);
+            $paymentMethod->setPosition((int) $position);
         }
 
         $this->sharedStorage->set('payment_method', $paymentMethod);
