@@ -49,11 +49,7 @@ class Api
     public function preparePayment(PaymentRequestBody $paymentBody): PreparedPayment
     {
         $apiClient = $this->getApiClient();
-
-        /** @var PreparedPayment $preparedPayment */
-        $preparedPayment = $apiClient->paymentApi->create($paymentBody);
-
-        return $preparedPayment;
+        return $apiClient->paymentApi->create($paymentBody);
     }
 
     public function getPayment(string $paymentId): Payment

@@ -31,7 +31,6 @@ final class DisplayStanPaymentMethodResolver implements PaymentMethodsResolverIn
         /** @var string $userAgent */
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-        /** @var PaymentMethodInterface $method */
         foreach ($supportedMethods as $index => $method) {
             /** @var ArrayObject $gatewayConfig */
             $gatewayConfig = $method->getGatewayConfig()->getConfig();

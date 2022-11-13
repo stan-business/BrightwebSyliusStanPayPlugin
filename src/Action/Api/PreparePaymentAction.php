@@ -40,8 +40,8 @@ class PreparePaymentAction implements ActionInterface, ApiAwareInterface
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
 
-        if ($details['transaction_id']) {
-            throw new LogicException(sprintf('The transaction has already been created for this payment. transaction_id: %s', $details['transaction_id']));
+        if ($details['stan_payment_id']) {
+            throw new LogicException(sprintf('The transaction has already been created for this payment. stan_payment_id: %s', $details['stan_payment_id']));
         }
 
         $details->validateNotEmpty(['int_amount', 'currency_code', 'return_url', 'order_id']);
