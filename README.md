@@ -83,7 +83,7 @@ The payment gateway integration uses `stan-php` for the API Client. Learn more i
     - PHPStan
     
       ```bash
-      vendor/bin/phpstan analyse -c phpstan.neon -l max src/  
+      vendor/bin/phpstan analyse -c phpstan.neon -l max src/
       ```
 
   - Coding Standard
