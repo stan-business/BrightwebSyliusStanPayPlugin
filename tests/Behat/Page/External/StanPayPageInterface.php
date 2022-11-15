@@ -8,5 +8,5 @@ use FriendsOfBehat\PageObjectExtension\Page\PageInterface;
 
 interface StanPayPageInterface extends PageInterface
 {
-    public function notify(string $content): void;
+    public function pay(): void;
 }

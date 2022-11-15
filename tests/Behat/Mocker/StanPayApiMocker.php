@@ -28,10 +28,16 @@ final class StanPayApiMocker
         $this->mocker = $mocker;
     }
 
+    public function mockSuccessfulPayment(
+        callable $action
+    ): void {
+        $this->mockGetPayment($action, "payment_success");
+    }
+
     public function mockPreparePayment(callable $action): void
     {
         $mock = $this->mocker->mockService(
-            'tests.brightweb.stan_pay_plugin.behat.mocker.api.prepare_payment',
+            'tests.brightweb.stan_pay_plugin.behat.mocker.action.prepare_payment',
             PreparePaymentAction::class
         );
 
@@ -45,20 +51,28 @@ final class StanPayApiMocker
         $mock
             ->shouldReceive('supports')
             ->andReturnUsing(function ($request) {
+                toto();
                 return $request instanceof PreparePayment;
             });
 
         $mock
             ->shouldReceive('execute')
             ->once()
-            ->andReturnUsing(function ($request) {
-                // TODO
+            ->andReturnUsing(function (PreparePayment $request) {
+                $details = ArrayObject::ensureArrayObject($request->getModel());
+
+                $details->replace([
+                    'stan_payment_id' => 'stan_payment',
+                    'payment_url' => 'mock'
+                ]);
             });
+
+        $action();
 
         $this->mocker->unmockAll();
     }
 
-    public function mockGetPayment(callable $action): void
+    public function mockGetPayment(callable $action, string $paymentStatus): void
     {
         $mock = $this->mocker->mockService(
             'tests.brightweb.stan_pay_plugin.behat.mocker.action.get_payment',
@@ -81,9 +95,15 @@ final class StanPayApiMocker
         $mock
             ->shouldReceive('execute')
             ->once()
-            ->andReturnUsing(function ($request) {
-                // TODO
+            ->andReturnUsing(function (GetPayment $request) {
+                $details = ArrayObject::ensureArrayObject($request->getModel());
+
+                $details->replace([
+                    'stan_payment_status' => $paymentStatus,
+                ]);
             });
+
+        $action();
 
         $this->mocker->unmockAll();
     }

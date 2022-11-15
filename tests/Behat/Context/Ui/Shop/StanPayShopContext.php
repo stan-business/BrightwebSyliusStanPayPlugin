@@ -60,7 +60,11 @@ class StanPayShopContext extends MinkContext implements Context
      */
     public function iGetRedirectedToStanPay(): void
     {
-       // TODO
+        $this->stanPayApiMocker->mockSuccessfulPayment(
+            function() {
+                $this->paymentPage->pay();
+            }
+        );
     }
     
     /**

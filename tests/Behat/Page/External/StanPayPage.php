@@ -46,70 +46,26 @@ final class StanPayPage extends Page implements StanPayPageInterface
         $this->payumNotifyPage = $payumNotifyPage;
     }
 
-    public function notify(string $content): void
+    public function pay(): void
     {
-        $notifyToken = $this->findToken('notify');
-
-        $notifyUrl = $this->payumNotifyPage->getNotifyUrl([
-            'gateway' => 'stan_pay',
-        ]);
-
-        $payload = sprintf($content, $notifyToken->getHash());
-        $this->client->request(
-            'POST',
-            $notifyUrl,
-            [],
-            [],
-            "",
-            $payload
-        );
+        $this->getDriver()->visit($this->findToken()->getTargetUrl());
     }
 
-    private function findToken(string $type = 'capture'): TokenInterface
+    private function findToken(string $name = 'capture'): TokenInterface
     {
-        $foundToken = null;
-        /** @var TokenInterface[] $tokens */
         $tokens = $this->securityTokenRepository->findAll();
+
         foreach ($tokens as $token) {
-            if (in_array($token->getHash(), $this->deadTokens)) {
-                continue;
-            }
-
-            if (false === strpos($token->getTargetUrl(), $type)) {
-                continue;
-            }
-
-            $foundToken = $token;
-        }
-
-        if (null === $foundToken) {
-            throw new RuntimeException('Cannot find token, check if you are after proper checkout steps');
-        }
-
-        // Sometime the token found is an already consumed one. Here we compare
-        // the $foundToken->getAfterUrl() with all tokens to see if the token
-        // concerned by the after url is alive, if not we save it to a dead list
-        // and retry to found the right token
-        if ($type !== 'notify') {
-            $relatedToken = null;
-            foreach ($tokens as $token) {
-                if (false === strpos($foundToken->getAfterUrl(), $token->getHash())) {
-                    continue;
-                }
-                $relatedToken = $token;
-            }
-
-            if (null === $relatedToken) {
-                $this->deadTokens[] = $foundToken->getHash();
-                return $this->findToken($type);
+            if (strpos($token->getTargetUrl(), $name)) {
+                return $token;
             }
         }
 
-        return $foundToken;
+        throw new \RuntimeException(sprintf('Cannot find "%s" token, check if you are after proper checkout steps', $name));
     }
 
     protected function getUrl(array $urlParameters = []): string
     {
-        return 'https://stan-app.fr';
+        return 'https://api.tan-app.fr';
     }
 }

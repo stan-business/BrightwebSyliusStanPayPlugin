@@ -16,7 +16,8 @@ Feature: Paying with Stan Pay during checkout
   Scenario: Successful payment in Stan Pay
     Given I added product "PHP T-Shirt" to the cart
     And I have proceeded selecting "Stan Pay" payment method
-    And I confirm my order with Stan Pay payment
-    Then I get redirected to Stan Pay and complete my payment
+    When I confirm my order with Stan Pay payment
+    And I get redirected to Stan Pay and complete my payment
     Then I should be notified that my payment has been completed
     And I should see the thank you page
+    And the latest order should have a payment with state "completed"

@@ -87,8 +87,6 @@ final class StanPayContext implements Context
             ]
         );
 
-        var_export($gatewayFactory);
-
         if (null !== $position) {
             $paymentMethod->setPosition((int) $position);
         }

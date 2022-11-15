@@ -28,18 +28,20 @@ final class DisplayStanPaymentMethodResolver implements PaymentMethodsResolverIn
     {
         $supportedMethods = $this->decoratedPaymentMethodsResolver->getSupportedMethods($subject);
 
-        /** @var string $userAgent */
-        $userAgent = $_SERVER['HTTP_USER_AGENT'];
-
-        foreach ($supportedMethods as $index => $method) {
-            /** @var ArrayObject $gatewayConfig */
-            $gatewayConfig = $method->getGatewayConfig()->getConfig();
-
-            if (isset($gatewayConfig['only_for_stanner'])) {
-                if (true === (bool) $gatewayConfig['only_for_stanner'] && !$this->checkIfStanner($userAgent)) {
-                    unset($supportedMethods[$index]);
-
-                    break;
+        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+            /** @var string $userAgent */
+            $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    
+            foreach ($supportedMethods as $index => $method) {
+                /** @var ArrayObject $gatewayConfig */
+                $gatewayConfig = $method->getGatewayConfig()->getConfig();
+    
+                if (isset($gatewayConfig['only_for_stanner'])) {
+                    if (true === (bool) $gatewayConfig['only_for_stanner'] && !$this->checkIfStanner($userAgent)) {
+                        unset($supportedMethods[$index]);
+    
+                        break;
+                    }
                 }
             }
         }
