@@ -1,3 +1,15 @@
+<p align="center">
+    <a href="https://www.stan-business.fr" target="_blank">
+        <img src="https://uploads-ssl.webflow.com/6244c80f2415f9499e3eb441/6256f6482c7c155a8f5a39b0_logo_stan_nobg_gradv2-min.png" width="200"  />
+    </a>
+</p>
+<br/>
+<p align="center">
+    <a href="https://sylius.com" target="_blank">
+        <img src="https://demo.sylius.com/assets/shop/img/logo.png" width="200"  />
+    </a>
+</p>
+
 # Stan Pay Plugin in Sylius
 ----
 
@@ -5,118 +17,41 @@
 
 Stan Pay is a French payment solution that allows e-commerce sites to offer their customers an ultra-fast checkout and an innovative alternative payment method to the bank card. Add the free Stan Pay plugin and make your Sylius store take off.
 
-# Installation
+### NOTE
 
-```bash
-$ composer require stan-business/sylius-stan-pay-plugin
-```
-    
-Add plugin dependencies to your config/bundles.php file:
+We highly recommend to integrate [Stan Pay](https://github.com/stan-business/BrightwebSyliusStanPayPlugin) with Stan Connect in order to offer a complete Stan experience to your customers!
 
-```php
-return [
-    Brightweb\SyliusStanPayPlugin::class => ['all' => true],
-]
-```
+## Why choose Stan Pay?
 
-# Configuration
-
-You will only need to create a free [Stan account](https://compte.stan-app.fr), and get your API credentials.
-
-# Development
-
-The payment gateway integration uses `stan-php` for the API Client. Learn more in the [documentation](https://doc.stan-app.fr).
-
-## Contribution & Dev
-
-### Running plugin tests
-
-  - PHPUnit
-
-    ```bash
-    vendor/bin/phpunit
-    ```
-
-  - PHPSpec
-
-    ```bash
-    vendor/bin/phpspec run
-    ```
-
-  - Behat (non-JS scenarios)
-
-    ```bash
-    vendor/bin/behat --strict --tags="~@javascript,@ui"
-    ```
-
-  - Behat (JS scenarios)
+The benefits of the Stan solution are multiple.
  
-    1. [Install Symfony CLI command](https://symfony.com/download).
+✔ Boosted conversion rate
+
+✔ No card limit
+
+✔ Direct account-to-account transfer
+
+✔ Fewer frauds
+
+✔ Better customer satisfaction
+
+✔ Enhanced security
+
+✔ Certified by the ACPR-Banque de France
+
+## Power up your website with Open Banking payment
+
+Stan Pay connects you to the millions of consumers who already use their banking app with our industry-leading technology.
  
-    2. Start Headless Chrome:
-    
-      ```bash
-      google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
-      ```
-    
-    3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:
-    
-      ```bash
-      symfony server:ca:install
-      APP_ENV=test symfony server:start --port=8080 --dir=tests/Application/public --daemon
-      ```
-    
-    4. Run Behat:
-    
-      ```bash
-      vendor/bin/behat --strict --tags="@javascript,@ui"
-      ```
-    
-  - Static Analysis
-  
-    - Psalm
-    
-      ```bash
-      vendor/bin/psalm
-      ```
-      
-    - PHPStan
-    
-      ```bash
-      vendor/bin/phpstan analyse -c phpstan.neon -l max src/
-      ```
+✔ Your customers make a transfer directly from their bank account to yours
 
-  - Coding Standard
-  
-    ```bash
-    vendor/bin/ecs check src
-    ```
+✔ No IBAN entry
 
-### Opening Sylius with your plugin
+✔ Connection to the main French banks
 
-- Using `test` environment:
+✔ The fastest, safest and most cost-effective way to accept payments from your customers
 
-    ```bash
-    (cd tests/Application && APP_ENV=test bin/console sylius:fixtures:load)
-    (cd tests/Application && APP_ENV=test symfony server:start --allow-http --dir public)
-    ```
-    
-- Using `dev` environment:
 
-    ```bash
-    (cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)
-    (cd tests/Application && APP_ENV=dev symfony server:start --allow-http --dir public)
-    ```
-
-## OS x64 Sass fix
-
-Update `vendor/sylius/sylius/src/Sylius/Bundle/{AdminBundle,ShopBundle}/gulpfile.babel.js` to add the following lines
-
-`yarn add sass && yarn upgrade guld-sass`
-
-```js
-import realSass from 'sass';
-import gulpSass from 'gulp-sass';
-
-const sass = gulpSass(realSass);
-```
+1. [Installation](docs/installation.md)
+1. [Onboarding](docs/onboarding.md)
+1. [Development](docs/development.md)
